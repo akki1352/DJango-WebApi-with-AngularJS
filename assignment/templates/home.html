@@ -1,0 +1,108 @@
+{% extends 'index.html' %}
+{% block title %}
+    <title>API | Home</title>
+{% endblock %}
+{% block body %}
+    {% load static %}
+    <script type="javascript" src="{% static 'angularjs/home.js'%}" crossorigin="anonymous" ></script> 
+    <div class="container">
+        <h2>HOMEPAGE</h2>        
+    </div>  
+    {% verbatim %}
+        <script>
+            var app = angular.module('MyApp', []);
+            app.run(function($http) {
+                $http.defaults.xsrfCookieName = 'csrftoken';
+                $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+            });
+            app.controller('displayController', function($scope, $http) {
+                
+                $http.get("http://127.0.0.1:8000/emp/").success(function (response) {
+                    $scope.datas = response;
+                });
+
+                $scope.editEmployee = function(id)
+                {
+                    $http.get("http://127.0.0.1:8000/emp/"+id).success(function(response){
+                        $scope.getData = response[0];
+                        console.log(response);
+                    })
+                }; 
+
+                $scope.deleteEmployee = function(id)
+                {
+                    $http.delete("http://127.0.0.1:8000/emp/"+id+"/").success(function(response){})
+                    window.location.reload();
+                }; 
+                
+                $scope.AddEmployee = function(name,email,username,password)
+                {
+                    $http({
+                        method: "POST",
+                        url: 'http://127.0.0.1:8000/emp/',
+                        data: 'fname=' + name + '&email=' + email + '&user=' + username + '&pwd=' + password,
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        }
+                    }).success(function(response){})
+                    window.location.reload();
+                }; 
+
+                $scope.updateEmployee = function(id, name, email, password)
+                {
+                    $http({
+                        method: "PUT",
+                        url: 'http://127.0.0.1:8000/emp/'+id+'/',
+                        data: 'fname=' + name + '&email=' + email + '&pwd=' + password,
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        }
+                    }).success(function(response){})
+                    // window.location.reload();
+                };
+            })
+        </script>
+        <div ng-app="MyApp" ng-controller="displayController">
+            <table style="width:100%">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email-Id</th>
+                    <th>Username</th>
+                    <th>Action</th>
+                </tr>
+                <tr ng-repeat="data in datas">
+                    <td ng-bind="data.id"></td>
+                    <td ng-bind="data.name"></td>
+                    <td ng-bind="data.email"></td>
+                    <td ng-bind="data.username"></td>
+                    <td>
+                        <input class="btn btn-primary" type="button" value="EDIT" ng-click="editEmployee(data.id)"/>
+                        <input class="btn btn-secondary" type="button" value="DELETE" ng-click="deleteEmployee(data.id)"/>
+                    </td>
+                </tr>
+            </table><br>
+            
+            <div class="container">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input class="form-control" type="text" id="name" ng-model="getData.name"/>
+                </div>  
+                <div class="form-group">
+                    <label for="email" >Email -Id:</label>
+                    <input class="form-control" type="text" name="emial" id="email" ng-model="getData.email"/>
+                </div>
+                <div class="form-group">
+                        <label for="username" >Username</label>
+                        <input class="form-control" type="text" name="username" id="username" ng-model="getData.username">
+                    </div>
+                <div class="form-group">
+                    <label for="password" >Password</label>
+                    <input class="form-control" type="password" name="password" id="password" ng-model="getData.password">
+                </div>
+                <input type="button" class="btn btn-primary"  value="SUBMIT" ng-click="AddEmployee(getData.name,getData.email,getData.username,getData.password)"/>
+                <input type="button" class="btn btn-primary"  value="UPDATE" ng-click="updateEmployee(getData.id, getData.name, getData.email, getData.password)"/>
+            </div>
+        </div>
+    {% endverbatim %}
+{% endblock %}

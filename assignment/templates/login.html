@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    <title>MyAPP | Registration</title>
+{% endblock %}
+
+{% block body %}
+    
+    {% if user is AnonymousUser %}
+        <div ng-app="myApp" ng-controller="myCtrl" class="container" action="">
+            <form name="frm" method="post" action="">
+                {% csrf_token %}
+                {{ form }}<br>
+                <button class="btn btn-dark btn-md" type="submit">Submit</button>
+                <div class="no-acc"> 
+                    Don't have an account! 
+                    <a href="/register/"> Sign Up Here </a> 									 
+                </div> 
+            </form>
+        </div>
+    {% else %}
+        <div ng-app="myApp" ng-controller="myCtrl" class="container" action="">
+            <h3>You are Signed in as {{ user }}</h3>
+        </div>
+    {% endif %}
+{% endblock %}
